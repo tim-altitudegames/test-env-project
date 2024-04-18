@@ -1,0 +1,21 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      build_number:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps: 
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Echo environment
+        run: echo "Running a ${{ inputs.environment }} build for build number ${{ inputs.build_number }}"

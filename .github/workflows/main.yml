@@ -1,0 +1,32 @@
+name: Main
+
+on:
+  workflow_dispatch:
+
+jobs:
+  initial-setup:
+    runs-on: self-hosted
+    steps:
+    - name: Generate build number
+      id: buildnumber
+      uses: onyxmueller/build-tag-number@v1.0.3
+      with:
+        token: ${{ secrets.github_token }}
+    outputs:
+     build_number: ${{ steps.buildnumber.outputs.build_number }}
+
+  call-build-dev:
+    name: Call Deploy Build Workflow for Dev
+    needs: initial-setup
+    uses: ./.github/workflows/build.yml
+    with:
+      environment: Development
+      build_number: ${{ needs.initial-setup.outputs.build_number }}
+
+  call-build-qa:
+    name: Call Deploy Build Workflow for QA
+    needs: call-build-dev
+    uses: ./.github/workflows/build.yml
+    with:
+      environment: QA
+      build_number: ${{ needs.initial-setup.outputs.build_number }}
